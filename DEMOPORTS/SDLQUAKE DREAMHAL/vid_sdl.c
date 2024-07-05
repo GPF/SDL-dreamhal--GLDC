@@ -6,10 +6,10 @@
 #include "alloca.h"
 #include <stdio.h> 
 #include <stdlib.h> 
-#include "SDLDH/SDL.h"
-#include "SDLDH/SDL_dreamcast.h" 
-#include "SDLDH/SDL_timer.h" 
-viddef_t    vid;                // global video state
+#include "SDL/SDL.h"
+#include "SDL/SDL_dreamcast.h" 
+#include "SDL/SDL_timer.h" 
+extern viddef_t    vid;                // global video state
 unsigned short  d_8to16table[256];
 
 // The original defaults
@@ -38,8 +38,8 @@ static float   mouse_x, mouse_y;
 static int mouse_oldbuttonstate = 0;
 
 // No support for option menus
-void (*vid_menudrawfn)(void) = NULL;
-void (*vid_menukeyfn)(int key) = NULL;
+// void (*vid_menudrawfn)(void) = NULL;
+// void (*vid_menukeyfn)(int key) = NULL;
 
 void    VID_SetPalette (unsigned char *palette)
 {
@@ -83,7 +83,7 @@ void    VID_Init (unsigned char *palette)
         SDL_DC_MapKey(0, SDL_DC_Y,  SDLK_g);
         SDL_DC_MapKey(0, SDL_DC_L,  SDLK_y);
               SDL_DC_MapKey(0, SDL_DC_R,  SDLK_ESCAPE);
-    SDL_Init(SDL_INIT_VIDEO|SDL_INIT_JOYSTICK| SDL_INIT_TIMER);
+    SDL_Init(SDL_INIT_VIDEO|SDL_INIT_JOYSTICK| SDL_INIT_CDROM| SDL_INIT_TIMER);
    // puts("\n--------------\n| DMA DRIVER |\n--------------");
     //  SDL_DC_SetVideoDriver(SDL_DC_DMA_VIDEO);
   //  puts("\n-----------------\n| DIRECT DRIVER |\n-----------------");

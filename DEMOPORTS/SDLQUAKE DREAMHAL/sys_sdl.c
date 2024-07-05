@@ -4,9 +4,9 @@
 #include "alloca.h"
 #include <stdio.h> 
 #include <stdlib.h> 
-#include "SDLDH/SDL.h"
-#include "SDLDH/SDL_dreamcast.h" 
-#include "SDLDH/SDL_timer.h"
+#include "SDL/SDL.h"
+#include "SDL/SDL_dreamcast.h" 
+#include "SDL/SDL_timer.h"
 #include "errno.h"
 #include <signal.h>
 #include <arch/timer.h>

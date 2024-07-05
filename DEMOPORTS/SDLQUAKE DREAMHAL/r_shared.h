@@ -1,3 +1,5 @@
+#ifndef R_SHARED_H
+#define R_SHARED_H
 /*
 Copyright (C) 1996-1997 Id Software, Inc.
 
@@ -155,3 +157,4 @@ typedef struct edge_s
 #endif	// _R_SHARED_H_
 
 #endif	// GLQUAKE
+#endif //R_SHARED_H

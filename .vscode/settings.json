@@ -1,0 +1,7 @@
+{
+    "files.associations": {
+        "d_local.h": "c",
+        "r_shared.h": "c",
+        "quakedef.h": "c"
+    }
+}

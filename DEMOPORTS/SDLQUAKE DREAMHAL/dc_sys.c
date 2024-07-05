@@ -21,8 +21,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "quakedef.h"
 #include "errno.h"
-#include "SDLDH/SDL.h"
-#include "SDLDH/SDL_dreamcast.h" 
+#include "SDL/SDL.h"
+#include "SDL/SDL_dreamcast.h" 
 #include <kos.h> 
 #include <arch/timer.h>
 #include <arch/arch.h>

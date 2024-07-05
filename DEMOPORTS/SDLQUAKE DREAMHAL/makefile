@@ -12,13 +12,13 @@ TARGET = quake.elf
 BIN = quake_uns.bin
 FIRSTREAD = quake_scr.bin
 # Optimize -------------------------------------------------------------------------
-//OPT= -DQUIET -DNDEBUG -O3 -g   -fstack-usage -Wstack-usage=512 -trigraphs  -ffast-math -mdiv=inv -maccumulate-outgoing-args -mpretend-cmove -Wl,--gc-sections 
- OPT=  -Os   -flto -fwhole-program -ffast-math -mfused-madd -fno-delayed-branch  -fno-optimize-sibling-calls -funroll-all-loops -fschedule-insns2 -fexpensive-optimizations -fomit-frame-pointer   -finline-functions
+#OPT= -DQUIET -DNDEBUG -O3 -g   -fstack-usage -Wstack-usage=512 -trigraphs  -ffast-math -mdiv=inv -maccumulate-outgoing-args -mpretend-cmove -Wl,--gc-sections 
+#OPT=  -O3  -fno-strict-aliasing -flto -fwhole-program -ffast-math -ffp-contract=fast -fno-delayed-branch  -fno-optimize-sibling-calls -funroll-all-loops -fschedule-insns2 -fexpensive-optimizations -fomit-frame-pointer   -finline-functions
 # Defines -------------------------------------------------------------------------
-KOS_LOCAL_CFLAGS = -DDC  -flto -fwhole-program  -DUSE_ZLIB -DDREAMCAST -DMAX_MEM_LEVEL -DSDL -DLSB_FIRST -DALIGN_LONG -DINLINE -DDC -DUCHAR_MAX=0xff -DUSHRT_MAX=0xffff -DULONG_MAX=0xffffffff
-KOS_CFLAGS += $(OPT)
+KOS_LOCAL_CFLAGS = -DDC -DUSE_ZLIB -DDREAMCAST -DMAX_MEM_LEVEL -DSDL -DLSB_FIRST -DALIGN_LONG -DINLINE -DDC -DUCHAR_MAX=0xff -DUSHRT_MAX=0xffff -DULONG_MAX=0xffffffff 
+KOS_CFLAGS += $(OPT) -I/opt/toolchains/dc/kos/addons/include/SDL
 # Files ---------------------------------------------------------------------------
-OBJS = memcpy.o memset.o dcmath.o dc_sys.o vid_sdl.o chase.o \
+OBJS = memcpy.o memset.o  dc_sys.o vid_sdl.o chase.o \
    cl_demo.o cl_input.o cl_main.o cl_parse.o cl_tent.o cmd.o common.o \
    console.o crc.o cvar.o   host.o host_cmd.o keys.o mathlib.o menu.o \
    net_loop.o net_main.o net_none.o net_vcr.o  pr_cmds.o \
@@ -41,20 +41,20 @@ SOFT_OBJS = d_edge.o d_fill.o d_init.o d_modech.o d_part.o d_polyse.o d_scan.o \
 
 all: rm-elf $(TARGET)
 # Base ----------------------------------------------------------------------------
-KOS_LOCAL_CFLAGS += -DDC
-KOS_LOCAL_CFLAGS += -I$(KOS_BASE)/include/SDL_image
-KOS_LOCAL_CFLAGS += -I$(KOS_BASE)/include/SDL_ttf
+KOS_LOCAL_CFLAGS += -DDC 
+# KOS_LOCAL_CFLAGS += -I$(KOS_BASE)/include/SDL_image
+# KOS_LOCAL_CFLAGS += -I$(KOS_BASE)/include/SDL_ttf
 include $(KOS_BASE)/Makefile.rules
 
 clean:
-	-rm -f $(TARGET) $(BIN) $(FIRSTREAD) $(OBJS) romdisk.*
+	-rm -f $(TARGET) $(BIN) $(FIRSTREAD) $(OBJS) $(SND_OBJS) $(SOFT_OBJS) romdisk.*
 
 rm-elf:
 	-rm -f $(TARGET) romdisk.*
 # Link ----------------------------------------------------------------------------
 $(TARGET): $(OBJS) $(SND_OBJS)  $(SOFT_OBJS) romdisk.o
-	$(KOS_CC) -flto -fwhole-program $(KOS_CFLAGS) -flto -fwhole-program $(KOS_LDFLAGS) -flto -fwhole-program -o $(TARGET) -flto -fwhole-program $(KOS_START) \
-		$(OBJS) $(SND_OBJS) $(SOFT_OBJS) romdisk.o $(OBJEXTRA) -flto -fwhole-program -L$(KOS_BASE)/lib  -lSDLDH  -lm -lz -lkallisti  -lc -ldcplib  $(KOS_LIBS)
+	$(KOS_CC) -I/opt/toolchains/dc/kos/addons/include/SDL $(KOS_CFLAGS) $(KOS_LDFLAGS) -o $(TARGET) $(KOS_START) \
+		$(OBJS) $(SND_OBJS) $(SOFT_OBJS) romdisk.o $(OBJEXTRA) -L/opt/toolchains/dc/kos/addons/lib/dreamcast$ -L$(KOS_BASE)/lib  -lSDL_1213DH  -lm -lz -lkallisti  -lc   $(KOS_LIBS)
 
 # ROM Disk Creation ---------------------------------------------------------------
 romdisk.img:

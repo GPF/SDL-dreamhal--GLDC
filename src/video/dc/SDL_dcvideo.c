@@ -125,6 +125,11 @@ void SDL_DC_SetVideoDriver(SDL_DC_driver value)
 	sdl_dc_video_driver=value;
 }
 
+SDL_DC_driver SDL_DC_GetVideoDriver(void)
+{
+    return sdl_dc_video_driver;
+}
+
 static SDL_VideoDevice *DC_CreateDevice(int devindex)
 {
 	SDL_VideoDevice *device;
@@ -286,16 +291,22 @@ const static SDL_Rect *tex_modes[]={
 	&RECT_1024x256,
 	&RECT_1024x512,
 	&RECT_1024x1024,
+	NULL
 };
 
 SDL_Rect **DC_ListModes(_THIS, SDL_PixelFormat *format, Uint32 flags)
 {
 #ifndef HAVE_OPENGL
-	if ((!(flags & SDL_FULLSCREEN))&&(sdl_dc_video_driver==SDL_DC_TEXTURED_VIDEO))
+	if ((!(flags & SDL_FULLSCREEN))&&(SDL_DC_GetVideoDriver()==SDL_DC_TEXTURED_VIDEO))
 	{
-		if (format->BitsPerPixel==16)
-			return (SDL_Rect **)&tex_modes;
-		return NULL;
+		switch(format->BitsPerPixel)
+		{
+			case 16:
+				SDL_Rect **thetex_modes = (SDL_Rect **)&tex_modes;
+				return thetex_modes;
+			default:
+				return NULL;	
+		}
 	}
 	else
 #endif
@@ -345,10 +356,11 @@ SDL_Surface *DC_SetVideoMode(_THIS, SDL_Surface *current,
 	int disp_mode,pixel_mode,pitch;
 	Uint32 Rmask, Gmask, Bmask;
 
-
+	
 #ifndef HAVE_OPENGL
-	if ((!(flags&SDL_FULLSCREEN))&(sdl_dc_video_driver==SDL_DC_TEXTURED_VIDEO))
+	if ((!(flags&SDL_FULLSCREEN))&&(SDL_DC_GetVideoDriver()==SDL_DC_TEXTURED_VIDEO))
 	{
+		fprintf(stderr, "\nWelcome to SDLdc = SDL_DC_TEXTURED_VIDEO");
 		for(sdl_dc_wtex=64;sdl_dc_wtex<width;sdl_dc_wtex<<=1);
 		for(sdl_dc_htex=64;sdl_dc_htex<height;sdl_dc_htex<<=1);
 		if (sdl_dc_wtex!=width || sdl_dc_htex!=height || bpp !=16) 
@@ -364,6 +376,7 @@ SDL_Surface *DC_SetVideoMode(_THIS, SDL_Surface *current,
 		height=480;
 		bpp=16;
 		sdl_dc_textured=-1;
+		fprintf(stderr, "\nBye to SDLdc = SDL_DC_TEXTURED_VIDEO - sdl_dc_width %d ,sdl_dc_height %d ,sdl_dc_bpp %d",sdl_dc_width,sdl_dc_height,sdl_dc_bpp);
 	}
 	else
 		sdl_dc_textured=0;
@@ -374,7 +387,7 @@ SDL_Surface *DC_SetVideoMode(_THIS, SDL_Surface *current,
 		__sdl_dc_is_60hz=1;
 		if (width==320 && height==240) disp_mode=DM_320x240_VGA;
 		else if (width==640 && height==480) disp_mode=DM_640x480_VGA;
-		else if (width==800 && height==600) disp_mode=DM_800x608_VGA;
+		// else if (width==800 && height==600) disp_mode=DM_800x608_VGA;
 		else if (width==768 && height==480) disp_mode=DM_768x480_PAL_IL;
 		else if (width==768 && height==576) disp_mode=DM_768x576_PAL_IL;
 		else if (width==256 && height==256) disp_mode=DM_256x256_PAL_IL;
@@ -389,7 +402,7 @@ SDL_Surface *DC_SetVideoMode(_THIS, SDL_Surface *current,
 		__sdl_dc_is_60hz=0;
 		if (width==320 && height==240) disp_mode=DM_320x240_PAL;
 		else if (width==640 && height==480) disp_mode=DM_640x480_PAL_IL;
-		else if (width==800 && height==600) disp_mode=DM_800x608;
+		// else if (width==800 && height==600) disp_mode=DM_800x608;
 		else if (width==768 && height==480) disp_mode=DM_768x480_PAL_IL;
 		else if (width==768 && height==576) disp_mode=DM_768x576_PAL_IL;
 		else if (width==256 && height==256) disp_mode=DM_256x256_PAL_IL;
@@ -403,7 +416,7 @@ SDL_Surface *DC_SetVideoMode(_THIS, SDL_Surface *current,
 		__sdl_dc_is_60hz=1;
 		if (width==320 && height==240) disp_mode=DM_320x240;
 		else if (width==640 && height==480) disp_mode=DM_640x480;
-		else if (width==800 && height==600) disp_mode=DM_800x608;
+		// else if (width==800 && height==600) disp_mode=DM_800x608;
 		else if (width==768 && height==480) disp_mode=DM_768x480;
 		else if (width==768 && height==576) disp_mode=DM_768x576_PAL_IL;
 		else if (width==256 && height==256) disp_mode=DM_256x256_PAL_IL;
@@ -450,6 +463,7 @@ SDL_Surface *DC_SetVideoMode(_THIS, SDL_Surface *current,
 #ifndef HAVE_OPENGL
 	if (sdl_dc_textured)
 	{
+		fprintf(stdout, "\nWelcome to SDLdc3! -sdl_dc_width :%d , sdl_dc_height %d \n",sdl_dc_width,sdl_dc_height);
 		current->w=sdl_dc_width;
 		current->h=sdl_dc_height;
 		current->pitch = sdl_dc_width*2; //(bpp>>3);
@@ -504,7 +518,7 @@ SDL_Surface *DC_SetVideoMode(_THIS, SDL_Surface *current,
 	if (flags & SDL_DOUBLEBUF) {
 		current->flags |= SDL_DOUBLEBUF;
 #ifndef HAVE_OPENGL
-		if (sdl_dc_video_driver!=SDL_DC_DIRECT_VIDEO)
+		if (SDL_DC_GetVideoDriver()!=SDL_DC_DIRECT_VIDEO)
 		{
 			pvr_dma_init();
 			sdl_dc_pvr_inited = 1;
@@ -553,6 +567,7 @@ static float sdl_dc_v2=0.6f;
 void SDL_DC_SetWindow(int width, int height)
 {
 #ifndef HAVE_OPENGL
+	fprintf(stdout, "\nWelcome to SDL_DC_SetWindow width: %d , height : %d, sdl_dc_width: %d , sdl_dc_height: %d \n", width, height, sdl_dc_width, sdl_dc_height);
 	sdl_dc_width=width;
 	sdl_dc_height=height;
 	sdl_dc_u1=0.3f*(1.0f/((float)sdl_dc_wtex));
@@ -621,7 +636,7 @@ static int DC_FlipHWSurface(_THIS, SDL_Surface *surface)
 	if (surface->flags & SDL_DOUBLEBUF) {
 		if (sdl_dc_wait_vblank)
 			vid_waitvbl();
-		if (sdl_dc_video_driver!=SDL_DC_DIRECT_VIDEO)
+		if (SDL_DC_GetVideoDriver()!=SDL_DC_DIRECT_VIDEO)
 		{
 			dcache_flush_range(sdl_dc_dblmem,sdl_dc_dblsize);
 			while (!pvr_dma_ready());

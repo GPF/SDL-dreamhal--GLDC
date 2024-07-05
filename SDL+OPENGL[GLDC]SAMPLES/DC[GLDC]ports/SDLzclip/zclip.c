@@ -12,8 +12,8 @@
 #include "GL/glu.h"
 #include "GL/glext.h"
 #include "GL/glkos.h"
-#include "SDLDH/SDL.h"
-#include "SDLDH/SDL_dreamcast.h"
+#include "SDL/SDL.h"
+#include "SDL/SDL_dreamcast.h"
 #include <kos.h>
 
 #define FPS 60

@@ -1162,6 +1162,7 @@ void COM_Init (char *basedir)
 	Cmd_AddCommand ("path", COM_Path_f);
 
 	COM_InitFilesystem ();
+
 	COM_CheckRegistered ();
 }
 
@@ -1635,12 +1636,13 @@ pack_t *COM_LoadPackFile (char *packfile)
 	int                             packhandle;
 	dpackfile_t             info[MAX_FILES_IN_PACK];
 	unsigned short          crc;
-
+	Con_Printf ("COM_LoadPackFile: %s\n",packfile);
 	if (Sys_FileOpenRead (packfile, &packhandle) == -1)
 	{
-//              Con_Printf ("Couldn't open %s\n", packfile);
+             Con_Printf ("Couldn't open %s\n", packfile);
 		return NULL;
 	}
+
 	Sys_FileRead (packhandle, (void *)&header, sizeof(header));
 	if (header.id[0] != 'P' || header.id[1] != 'A'
 	|| header.id[2] != 'C' || header.id[3] != 'K')
@@ -1718,7 +1720,8 @@ void COM_AddGameDirectory (char *dir)
 	for (i=0 ; ; i++)
 	{
 		sprintf (pakfile, "%s/pak%i.pak", dir, i);
-		pak = COM_LoadPackFile (pakfile);
+
+			Con_Printf ("COM_LoadPackFile: %s\n",pakfile);
 		if (!pak)
 			break;
 		search = Hunk_Alloc (sizeof(searchpath_t));
@@ -1726,7 +1729,7 @@ void COM_AddGameDirectory (char *dir)
 		search->next = com_searchpaths;
 		com_searchpaths = search;               
 	}
-
+	
 //
 // add the contents of the parms.txt file to the end of the command line
 //
@@ -1761,7 +1764,7 @@ void COM_InitFilesystem (void)
 		if ((basedir[j-1] == '\\') || (basedir[j-1] == '/'))
 			basedir[j-1] = 0;
 	}
-
+	
 //
 // -cachedir <path>
 // Overrides the system supplied cache directory (NULL or /qcache)

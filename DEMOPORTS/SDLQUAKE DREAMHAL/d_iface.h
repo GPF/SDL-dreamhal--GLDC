@@ -1,3 +1,5 @@
+#ifndef D_IFACE_H
+#define D_IFACE_H
 /*
 Copyright (C) 1996-1997 Id Software, Inc.
 
@@ -227,3 +229,4 @@ extern vrect_t	scr_vrect;
 
 extern byte		*r_warpbuffer;
 
+#endif 
